@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Satz-Generator (中文造句随机转盘)</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    .wheels-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .wheel-box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 260px;
+    }
+    
+    .wheel-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #34495e;
+      margin-bottom: 15px;
+    }
+    
+    .wheel-display {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 6px solid #3498db;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      background: #fafafa;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    
+    .spinning {
+      border-color: #e67e22 !important;
+      background: #fffdf9 !important;
+    }
+    
+    .char {
+      font-size: 2.2rem;
+      font-weight: bold;
+      color: #2c3e50;
+      line-height: 1.2;
+    }
+    
+    .pinyin {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 1.1rem;
+      color: #e67e22;
+      margin-top: 4px;
+    }
+    
+    .german {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 1rem;
+      color: #7f8c8d;
+      font-style: italic;
+    }
+    
+    .controls {
+      margin-top: 15px;
+    }
+    
+    button {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: background 0.2s, transform 0.1s;
+    }
+    
+    button:hover {
+      background-color: #c0392b;
+    }
+    
+    button:active {
+      transform: scale(0.98);
+    }
+    
+    .global-controls {
+      margin-bottom: 25px;
+    }
+    
+    .global-btn {
+      background-color: #27ae60;
+      font-size: 1.2rem;
+      padding: 12px 36px;
+    }
+    
+    .global-btn:hover {
+      background-color: #219150;
+    }
+    
+    .sentence-result {
+      background: #fff;
+      padding: 20px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+      text-align: center;
+      max-width: 800px;
+      width: 90%;
+    }
+    
+    .sentence-result h2 {
+      margin-top: 0;
+      color: #7f8c8d;
+      font-size: 1rem;
+    }
+    
+    .result-text {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎲 Satz-Generator (随机造句转盘)</h1>
+
+  <div class="global-controls">
+    <button class="global-btn" id="btn-toggle-all">START / STOP (全部转动/停止)</button>
+  </div>
+
+  <div class="wheels-container">
+    <!-- 主词 -->
+    <div class="wheel-box">
+      <div class="wheel-title">主词 (Subjekt)</div>
+      <div class="wheel-display" id="wheel-subject">
+        <div class="char" id="char-subject">我</div>
+        <div class="pinyin" id="py-subject">wǒ</div>
+        <div class="german" id="de-subject">ich</div>
+      </div>
+      <div class="controls">
+        <button id="btn-subject">Start / Stop</button>
+      </div>
+    </div>
+
+    <!-- 动词 -->
+    <div class="wheel-box">
+      <div class="wheel-title">动词 (Verb)</div>
+      <div class="wheel-display" id="wheel-verb">
+        <div class="char" id="char-verb">是</div>
+        <div class="pinyin" id="py-verb">shì</div>
+        <div class="german" id="de-verb">sein</div>
+      </div>
+      <div class="controls">
+        <button id="btn-verb">Start / Stop</button>
+      </div>
+    </div>
+
+    <!-- 名词 -->
+    <div class="wheel-box">
+      <div class="wheel-title">名词 (Nomen)</div>
+      <div class="wheel-display" id="wheel-object">
+        <div class="char" id="char-object">老师</div>
+        <div class="pinyin" id="py-object">lǎoshī</div>
+        <div class="german" id="de-object">Lehrer(in)</div>
+      </div>
+      <div class="controls">
+        <button id="btn-object">Start / Stop</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sentence-result">
+    <h2>组合出的句子：</h2>
+    <div class="result-text" id="sentence-display">我 是 老师。</div>
+  </div>
+
+  <script>
+    const subjects = [
+      { char: "我", py: "wǒ", de: "ich" },
+      { char: "你", py: "nǐ", de: "du" },
+      { char: "他", py: "tā", de: "er" },
+      { char: "她", py: "tā", de: "sie" }
+    ];
+
+    const verbs = [
+      { char: "是", py: "shì", de: "sein" },
+      { char: "不是", py: "bú shì", de: "nicht sein" },
+      { char: "爱", py: "ài", de: "lieben" },
+      { char: "不爱", py: "bú ài", de: "nicht lieben" },
+      { char: "怕", py: "pà", de: "Angst haben" },
+      { char: "不怕", py: "bú pà", de: "keine Angst haben" }
+    ];
+
+    const objects = [
+      { char: "老师", py: "lǎoshī", de: "Lehrer(in)" },
+      { char: "家人", py: "jiārén", de: "Familie" },
+      { char: "爸爸", py: "bàba", de: "Papa" },
+      { char: "妈妈", py: "māma", de: "Mama" },
+      { char: "女生", py: "nǚshēng", de: "Mädchen" },
+      { char: "蜘蛛", py: "zhīzhū", de: "Spinne" },
+      { char: "吸血鬼", py: "xīxuěguǐ", de: "Vampir" },
+      { char: "狗", py: "gǒu", de: "Hund" },
+      { char: "猫", py: "māo", de: "Katze" },
+      { char: "马", py: "mǎ", de: "Pferd" },
+      { char: "鸡", py: "jī", de: "Hahn/Huhn" },
+      { char: "猪", py: "zhū", de: "Schwein" },
+      { char: "熊", py: "xióng", de: "Bär" }
+    ];
+
+    const state = {
+      subject: { running: false, timer: null, index: 0, list: subjects },
+      verb: { running: false, timer: null, index: 0, list: verbs },
+      object: { running: false, timer: null, index: 0, list: objects }
+    };
+
+    function updateDisplay(type) {
+      const item = state[type].list[state[type].index];
+      document.getElementById(`char-${type}`).innerText = item.char;
+      document.getElementById(`py-${type}`).innerText = item.py;
+      document.getElementById(`de-${type}`).innerText = item.de;
+      updateSentence();
+    }
+
+    function updateSentence() {
+      const s = state.subject.list[state.subject.index].char;
+      const v = state.verb.list[state.verb.index].char;
+      const o = state.object.list[state.object.index].char;
+      document.getElementById("sentence-display").innerText = `${s} ${v} ${o}。`;
+    }
+
+    function toggleWheel(type) {
+      const w = state[type];
+      const wheelEl = document.getElementById(`wheel-${type}`);
+      if (w.running) {
+        clearInterval(w.timer);
+        w.running = false;
+        wheelEl.classList.remove("spinning");
+      } else {
+        w.running = true;
+        wheelEl.classList.add("spinning");
+        w.timer = setInterval(() => {
+          w.index = Math.floor(Math.random() * w.list.length);
+          updateDisplay(type);
+        }, 60);
+      }
+    }
+
+    document.getElementById("btn-subject").addEventListener("click", () => toggleWheel("subject"));
+    document.getElementById("btn-verb").addEventListener("click", () => toggleWheel("verb"));
+    document.getElementById("btn-object").addEventListener("click", () => toggleWheel("object"));
+
+    document.getElementById("btn-toggle-all").addEventListener("click", () => {
+      const anyRunning = state.subject.running || state.verb.running || state.object.running;
+      if (anyRunning) {
+        if (state.subject.running) toggleWheel("subject");
+        if (state.verb.running) toggleWheel("verb");
+        if (state.object.running) toggleWheel("object");
+      } else {
+        if (!state.subject.running) toggleWheel("subject");
+        if (!state.verb.running) toggleWheel("verb");
+        if (!state.object.running) toggleWheel("object");
+      }
+    });
+  </script>
+</body>
+</html>
